@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Border Control Ultimate</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Courier New', monospace;
+      background: linear-gradient(135deg, #f0f0f0 60%, #dde7ef 100%);
+      color: #222;
+      transition: background-color 1s ease;
+    }
+    header {
+      background: #223a5f;
+      color: white;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 4px solid #162342;
+      box-shadow: 0 4px 12px rgba(34,58,95,0.15);
+    }
+    header h1 {
+      font-family: 'Montserrat', monospace;
+      font-size: 2em;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+    #rules {
+      margin-left: 18px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #score {
+      font-weight: bold;
+      font-size: 1.13em;
+      margin-left: 18px;
+    }
+    #day-indicator {
+      font-weight: bold;
+      font-size: 1.15em;
+      margin-left: 18px;
+      color: #f8cf50;
+      letter-spacing: 1.2px;
+    }
+    #shop-btn {
+      position: fixed;
+      top: 70px;
+      right: 28px;
+      z-index: 1201;
+      background: #f8cf50;
+      color: #223a5f;
+      font-weight: bold;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 19px;
+      box-shadow: 0 2px 8px #223a5f33;
+      cursor: pointer;
+      display: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    #shop-btn:hover {
+      background: #ffe194;
+      color: #c0392b;
+    }
+    #basic-ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 230px;
+      background: rgba(34, 58, 95, 0.93);
+      color: #fff;
+      padding: 15px 18px 22px 18px;
+      border-radius: 0 0 18px 0;
+      z-index: 1100;
+      box-shadow: 2px 6px 16px rgba(34,58,95,0.18);
+      transition: opacity 0.3s;
+      display: block;
+    }
+    #basic-ui.closed {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #basic-ui h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.2em;
+      letter-spacing: 1.2px;
+      color: #f8cf50;
+    }
+    #clock {
+      font-weight: bold;
+      font-size: 1.3em;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      margin-top: 4px;
+    }
+    #basic-ui .label {
+      color: #f8cf50;
+    }
+    #controls-menu {
+      background: #344a6b;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin: 15px 0 10px 0;
+      color: #ffe;
+      font-size: 0.97em;
+      line-height: 1.65;
+      border: 1px solid #657da9;
+    }
+    #controls-menu strong {
+      color: #ffed8a;
+    }
+    #severity-meter-block {
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+    #severity-meter {
+      height: 22px;
+      width: 100%;
+      background: #c1cde7;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #617bb5;
+    }
+    #severity-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #35d13c, #e7d235, #d1542a, #c0392b 90%);
+      transition: width 0.4s, background 0.2s;
+      border-radius: 8px;
+      box-shadow: 0 0 7px 1px #f8cf50 inset;
+    }
+    #severity-label {
+      font-size: 1em;
+      font-weight: bold;
+      text-shadow: 0 1px 2px #223a5f33;
+      color: #f8cf50;
+      margin-top: 3px;
+    }
+    #basic-ui-close {
+      position: absolute;
+      top: 7px;
+      right: 10px;
+      border: none;
+      background: transparent;
+      color: #f8cf50;
+      font-size: 1.3em;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1201;
+      padding: 0 4px;
+      transition: color 0.15s;
+    }
+    #basic-ui-close:hover {
+      color: #fff;
+      background: #c0392b;
+      border-radius: 50%;
+    }
+    #basic-ui-open {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      width: 32px;
+      height: 32px;
+      background: #223a5f;
+      color: #f8cf50;
+      border: none;
+      border-radius: 50%;
+      font-size: 2em;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1202;
+      display: none;
+      box-shadow: 1px 2px 10px #223a5f66;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 32px;
+      transition: background 0.2s, color 0.2s;
+    }
+    #basic-ui-open:hover {
+      background: #f8cf50;
+      color: #223a5f;
+    }
+    #store {
+      position: fixed;
+      bottom: 28px;
+      right: 26px;
+      background: #fff;
+      padding: 26px 22px 22px 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(34,58,95,0.17);
+      display: none;
+      z-index: 1200;
+      min-width: 340px;
+      max-width: 98vw;
+      max-height: 60vh;
+      overflow-y: auto;
+      resize: both;
+    }
+    #store h3 {
+      margin-top: 0; color: #223a5f;
+      margin-bottom: 8px;
+      cursor: move;
+      user-select: none;
+    }
+    .upgrade, .upgrade-item {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 7px;
+      background: #2980b9;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s;
+      border: 1.5px solid #1a5f85;
+    }
+    .upgrade:hover, .upgrade-item:hover {
+      background: #2e9ef7;
+    }
+
+    #game-area {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      position: relative;
+      margin-top: 38px;
+      margin-left: 240px;
+      margin-right: 15px;
+      min-height: 240px;
+    }
+    #entrant-info {
+      background: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      align-items: flex-start;
+      box-shadow: 0 2px 12px #e1dbd8;
+      min-width: 230px;
+      max-width: 330px;
+      border: 2px solid #b8c6db;
+    }
+    #personal-info {
+      font-size: 1.06em;
+      line-height: 1.7;
+      color: #223a5f;
+      margin-top: 0;
+    }
+
+    .document {
+      background: #f8f3e8;
+      border: 2.5px solid #2c3e50;
+      padding: 13px 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+      position: relative;
+      min-width: 220px;
+      max-width: 290px;
+    }
+    .passport::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0,0,0,0.08) 10px,
+        rgba(0,0,0,0.08) 20px
+      );
+      pointer-events: none;
+    }
+    .low-quality {
+      transform: rotate(2deg);
+      filter: sepia(0.5) brightness(1.1);
+      background: #e0d5c2;
+      border-color: #666;
+    }
+    .security-hologram {
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+    }
+    #controls {
+      display: flex;
+      gap: 18px;
+      margin-top: 24px;
+      margin-left: 1px;
+    }
+    #controls button {
+      flex: 1;
+      padding: 14px 0;
+      font-size: 1.03em;
+      cursor: pointer;
+      border: none;
+      border-radius: 7px;
+      color: white;
+      margin-top: 2px;
+      box-shadow: 0 2px 7px #e3e3e3;
+      transition: background 0.18s;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    #approve { background: #27ae60; }
+    #deny { background: #c0392b; }
+    #call-guard-btn {
+      background: #d32f2f;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 7px;
+      padding: 14px 0;
+      font-size: 1.02em;
+      margin-left: 7px;
+      border: none;
+      box-shadow: 0 2px 7px #e3e3e3;
+      cursor: pointer;
+      display: none;
+      transition: background 0.18s;
+    }
+    #call-guard-btn.active {
+      display: inline-block;
+      animation: alert-pulse 1s infinite;
+    }
+    #lockdown-btn {
+      background: #e74c3c;
+      color: white;
+      padding: 14px 0;
+      font-size: 1.04em;
+      border: none;
+      border-radius: 7px;
+      position: fixed;
+      bottom: 28px;
+      left: 26px;
+      z-index: 1200;
+      font-weight: bold;
+      letter-spacing: 1.2px;
+      box-shadow: 0 2px 7px #e3e3e3;
+      display: none;
+    }
+
+    /* Gun and stamp animation */
+    #gun-sight {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5em;
+      pointer-events: none;
+      display: none;
+      z-index: 5000;
+      text-shadow: 0 0 16px #ff4444, 0 0 38px #fff;
+      animation: gun-shot 0.14s linear 1;
+    }
+    @keyframes gun-shot {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(1);}
+      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.18) rotate(-9deg);}
+      60% { opacity: 1; transform: translate(-50%, -50%) scale(0.85) rotate(9deg);}
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1);}
+    }
+    .stamp {
+      position: absolute;
+      right: 20px;
+      bottom: 7px;
+      font-size: 2.7em;
+      font-weight: bold;
+      color: #2c3e50;
+      opacity: 0;
+      pointer-events: none;
+      animation: stamp-in 0.5s forwards;
+      text-shadow: 0 2px 13px #ddd, 0 0 1px #c0392b;
+      z-index: 2500;
+    }
+    @keyframes stamp-in {
+      0% { opacity: 0; transform: scale(2.4) rotate(-20deg);}
+      70%{ opacity: 0.8; }
+      90% { opacity: 1; transform: scale(1.1) rotate(4deg);}
+      100% { opacity: 1; transform: scale(1) rotate(0deg);}
+    }
+    .feedback-message {
+      position: fixed;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.1em;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.21);
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      background: rgba(255,255,255,0.92);
+      border-radius: 11px;
+      padding: 12px 20px;
+      max-width: 80vw;
+      box-shadow: 0 2px 18px #223a5f22;
+      overflow-x: auto;
+    }
+    .feedback-message.active {
+      opacity: 1;
+      pointer-events: auto;
+      animation: fadeOut 1.6s forwards;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* Draggable and scrollable popups */
+    #guidebook,
+    #store,
+    #bomb-overlay {
+      cursor: default;
+      overflow-y: auto;
+      max-height: 65vh;
+      resize: both;
+      min-width: 240px;
+      max-width: 98vw;
+    }
+    #guidebook::-webkit-scrollbar,
+    #store::-webkit-scrollbar,
+    #bomb-overlay::-webkit-scrollbar {
+      width: 8px;
+      background: #ddd;
+    }
+    #guidebook::-webkit-scrollbar-thumb,
+    #store::-webkit-scrollbar-thumb,
+    #bomb-overlay::-webkit-scrollbar-thumb {
+      background: #b8c6db;
+      border-radius: 5px;
+    }
+    #guidebook h3,
+    #bomb-overlay .timer,
+    #store h3 {
+      cursor: move;
+      user-select: none;
+    }
+
+    #guidebook {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.98);
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.21);
+      display: none;
+      max-width: 350px;
+      z-index: 2000;
+    }
+    #guidebook h3 {
+      margin-top: 0;
+      color: #223a5f;
+    }
+    #guidebook ul {
+      margin: 0 0 0 12px;
+      padding: 0;
+      font-size: 1.05em;
+    }
+    #guidebook li {
+      margin-bottom: 7px;
+      line-height: 1.7;
+      color: #2a2e35;
+    }
+    #guidebook strong {
+      color: #c0392b;
+    }
+
+    #bomb-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #2c3e50;
+      padding: 24px 28px 16px 28px;
+      border-radius: 13px;
+      text-align: center;
+      z-index: 9999;
+      color: white;
+      box-shadow: 0 2px 18px #0005;
+      min-width: 220px;
+      min-height: 100px;
+      max-width: 95vw;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .wire {
+      padding: 10px 24px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-size: 1.25em;
+      border-radius: 7px;
+      font-family: 'Segoe UI', monospace;
+      font-weight: bold;
+      box-shadow: 0 2px 7px #2223;
+      border: 2.5px solid #fff4;
+      text-shadow: 1px 1px 2px #0008;
+      transition: background 0.2s;
+    }
+    .wire:hover {
+      filter: brightness(1.1);
+      outline: 2px solid #fff;
+    }
+    @media (max-width: 600px) {
+      #game-area {
+        margin-left: 0;
+        flex-direction: column;
+      }
+      #guidebook {
+        max-width: 200px;
+        font-size: 0.9em;
+      }
+      #basic-ui {
+        width: 100vw;
+        border-radius: 0 0 12px 12px;
+        left: 0; top: 0;
+      }
+      #basic-ui-open {
+        left: 5px;
+        top: 5px;
+      }
+      #shop-btn {
+        top: 55px;
+        right: 5vw;
+        font-size: 1em;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Border Control Ultimate</h1>
+    <span id="day-indicator">Day 1</span>
+    <div id="rules"><strong>Rules of the Day:</strong> Loading...</div>
+    <div id="score">Score: 0 | Cash: $<span id="currency">0</span></div>
+  </header>
+  <button id="shop-btn" style="display:none;">Open Shop</button>
+  <button id="basic-ui-open" title="Open Basic UI">&#9776;</button>
+  <div id="basic-ui">
+    <button id="basic-ui-close" title="Close Basic UI">&times;</button>
+    <h3>Basic UI</h3>
+    <div id="clock">00:00</div>
+    <div><span class="label">Score:</span> <span id="score-display">0</span></div>
+    <div><span class="label">Cash:</span> $<span id="cash-display">0</span></div>
+    <div id="severity-meter-block">
+      <span id="severity-label">Severity: 1/7</span>
+      <div id="severity-meter"><div id="severity-progress"></div></div>
+    </div>
+    <div id="controls-menu">
+      <strong>Controls:</strong><br>
+      [G] - Toggle Guidebook<br>
+      [A] - Approve<br>
+      [D] - Deny<br>
+      [C] - Call Guard (when available)<br>
+      [L] - Lockdown (when available)<br>
+      [S] - Open Store<br>
+      [Esc] - Close overlays<br>
+      [B] - Show/Hide Basic UI
+    </div>
+  </div>
+  <main>
+    <div id="game-area">
+      <div id="entrant-info">
+        <div id="personal-info">
+          <p id="name"><strong>Name:</strong> ---</p>
+          <p id="nationality"><strong>Nationality:</strong> ---</p>
+        </div>
+      </div>
+      <div id="passport-container" class="document">
+        <h3>Passport</h3>
+        <ul id="passport-list"></ul>
+      </div>
+      <div id="visa-container" class="document">
+        <h3>Visa</h3>
+        <ul id="visa-list"></ul>
+      </div>
+      <div id="vaccine-container" class="document">
+        <h3>Vaccination Record</h3>
+        <ul id="vaccine-list"></ul>
+      </div>
+      <div id="digital-container" class="document">
+        <h3>Digital ID</h3>
+        <ul id="digital-list"></ul>
+      </div>
+    </div>
+    <div id="controls">
+      <button id="approve">Approve</button>
+      <button id="deny">Deny</button>
+      <button id="call-guard-btn">Call Guard</button>
+    </div>
+  </main>
+  <button id="lockdown-btn" style="display:none;">LOCKDOWN</button>
+  <div id="gun-sight">🔫</div>
+  <div id="feedback" class="feedback-message"></div>
+  <div id="guidebook">
+    <h3>📘 Guidebook</h3>
+    <ul>
+      <li>✅ <strong>Photo Match:</strong> <span style="color:#888">(No photos in this mode)</span></li>
+      <li>📅 <strong>Expiration:</strong> Check expiry dates (passport/visa)</li>
+      <li>🖨️ <strong>Print Quality:</strong> Blurry text/colors = possible fake</li>
+      <li>🌈 <strong>Holograms:</strong> Genuine passports have security holograms</li>
+      <li>📜 <strong>Event Rules:</strong> Strictly enforce current day's special rule</li>
+      <li>🧳 <strong>Visa Check:</strong> Required nationalities must have valid visa</li>
+      <li>💉 <strong>Health:</strong> Pandemic days require vaccination proof</li>
+      <li>🔋 <strong>Digital ID:</strong> During cyber attacks, physical docs only</li>
+      <li>🔄 <strong>Consistency:</strong> All documents must have matching details</li>
+      <li>🚨 <strong>Terrorist Alert:</strong> Call Guard or Shoot within 10s or lose $500-$1000</li>
+      <li>🕳️ <strong>Bomb Threat:</strong> Defuse bomb by cutting correct wire (timer 35-60s)</li>
+      <li>🔒 <strong>Lockdown:</strong> Can activate during last 9s of Terrorist event (cooldown 24m)</li>
+    </ul>
+  </div>
+  <div id="store">
+    <h3>🛒 Store <span id="store-cash-label"></span></h3>
+    <button class="upgrade" data-cost="50" data-upgrade="flashlight">
+      🔦 Flashlight ($50) - Better night visibility
+    </button>
+    <button class="upgrade" data-cost="100" data-upgrade="magnifier">
+      🔍 Magnifier ($100) - Spot document flaws
+    </button>
+    <button class="upgrade" data-cost="200" data-upgrade="scanner">
+      📡 Scanner ($200) - Auto-detect expired docs
+    </button>
+    <button class="upgrade" data-cost="300" data-upgrade="forgerykit">
+      🕵️ Forgery Kit ($300) - Detect forgeries
+    </button>
+    <button class="upgrade" data-cost="350" data-upgrade="vaxscanner">
+      💉 Vax Scanner ($350) - Auto-check vaccination
+    </button>
+    <button class="upgrade" data-cost="400" data-upgrade="shockgloves">
+      ⚡ Shock Gloves ($400) - Subdue terrorists instantly
+    </button>
+    <button class="upgrade" data-cost="600" data-upgrade="kevlar">
+      🦺 Kevlar Vest ($600) - Reduces terrorist penalty by 50%
+    </button>
+    <button class="upgrade" data-cost="950" data-upgrade="xray">
+      🩻 X-ray ($950) - Reveal hidden bomb wires
+    </button>
+    <button class="upgrade" data-cost="1200" data-upgrade="timeslow">
+      🕑 Time Slow ($1200) - Slows bomb/terrorist event timers
+    </button>
+    <button class="upgrade" data-cost="1800" data-upgrade="auto-approve">
+      🤖 Auto-Approve ($1800) - Approve 1 entrant per day automatically
+    </button>
+    <div class="upgrade-item" data-cost="300" data-upgrade="scanner-ultimate">
+      📠 Document Scanner ($300) - +20% correct decisions
+    </div>
+    <div class="upgrade-item" data-cost="500" data-upgrade="training">
+      🎓 Training Manual ($500) - +1 severity tolerance
+    </div>
+    <div class="upgrade-item" data-cost="700" data-upgrade="fingerprint">
+      🖐️ Fingerprint Kit ($700) - Detect forged documents
+    </div>
+    <div style="margin-top:8px;">Cash: $<span id="store-currency">0</span></div>
+  </div>
+  <audio id="gun-audio" src="https://cdn.pixabay.com/audio/2022/07/26/audio_125bfa6c89.mp3" preload="auto"></audio>
+  <script>
+    // --- Draggable popups ---
+    function makeDraggable(popup, handleSelector) {
+      let isDragging = false, startX, startY, startLeft, startTop;
+      const handle = popup.querySelector(handleSelector) || popup;
+      handle.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        isDragging = true;
+        popup.style.userSelect = 'none';
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = popup.getBoundingClientRect();
+        startLeft = rect.left;
+        startTop = rect.top;
+        document.body.style.cursor = "move";
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        let left = Math.max(0, Math.min(window.innerWidth - popup.offsetWidth, startLeft + (e.clientX - startX)));
+        let top = Math.max(0, Math.min(window.innerHeight - 40, startTop + (e.clientY - startY)));
+        popup.style.left = left + "px";
+        popup.style.top = top + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+        popup.style.position = "fixed";
+      });
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+        popup.style.userSelect = '';
+        document.body.style.cursor = "";
+      });
+    }
+    window.addEventListener('DOMContentLoaded', function() {
+      makeDraggable(document.getElementById('guidebook'), 'h3');
+      makeDraggable(document.getElementById('store'), 'h3');
+    });
+    function makeBombOverlayDraggable() {
+      const bombOverlay = document.getElementById('bomb-overlay');
+      if (bombOverlay) {
+        makeDraggable(bombOverlay, '.timer');
+      }
+    }
+
+    // Basic UI open/close logic
+    const basicUI = document.getElementById('basic-ui');
+    const basicUIClose = document.getElementById('basic-ui-close');
+    const basicUIOpen = document.getElementById('basic-ui-open');
+    function closeBasicUI() {
+      basicUI.classList.add("closed");
+      setTimeout(() => {
+        basicUIOpen.style.display = "block";
+      }, 300);
+    }
+    function openBasicUI() {
+      basicUI.classList.remove("closed");
+      basicUIOpen.style.display = "none";
+    }
+    basicUIClose.addEventListener('click', closeBasicUI);
+    basicUIOpen.addEventListener('click', openBasicUI);
+    document.addEventListener('keydown', function(e) {
+      if((e.key === 'b' || e.key === 'B')) {
+        if(basicUI.classList.contains("closed")) {
+          openBasicUI();
+        } else {
+          closeBasicUI();
+        }
+      }
+    });
+
+    // --- Auto Save/Load Feature ---
+    function autoSaveGame() {
+      const saveData = {
+        ...gameState,
+        lastSave: Date.now(),
+        totalDaysPlayed: totalDaysPlayed
+      };
+      localStorage.setItem('borderControlSave', JSON.stringify(saveData));
+    }
+    function autoLoadGame() {
+      const saveData = JSON.parse(localStorage.getItem('borderControlSave'));
+      if (saveData && saveData.savedataVersion === gameState.savedataVersion) {
+        Object.assign(gameState, saveData);
+        totalDaysPlayed = saveData.totalDaysPlayed || 0;
+        gameState.dayStart = Date.now() - (gameState.gameTime || 0);
+        updateDisplays();
+        showFeedback("Game Auto-Loaded!", "#2980b9");
+        nextEntrant();
+      }
+    }
+    function saveAndUpdate() {
+      autoSaveGame();
+      updateDisplays();
+    }
+    setInterval(autoSaveGame, 5000);
+    window.addEventListener('beforeunload', autoSaveGame);
+
+    const firstNames = ["Alex", "Maria", "Jordan", "Taylor", "Chris", "Pat", "Sam", "Jamie"];
+    const lastNames  = ["Smith", "Johnson", "Lee", "Brown", "Garcia", "Martinez", "Davis", "Lopez"];
+    const nationalities = ["Freedonia", "Columbia", "Lunaria", "Arstotzka", "Novgorod", "Selvia"];
+    const events = [
+      { name: "Pandemic Alert", rule: "Vaccination Required", type: "vaccine", multiplier: 2, severity: 2 },
+      { name: "Cyber Attack", rule: "Digital IDs Offline", type: "digital", multiplier: 2.5, severity: 3 },
+      { name: "Border Security Increase", rule: "Visa Required", type: "visa", multiplier: 1.6, severity: 2 },
+      { name: "Normal Day", rule: "No special rule", type: null, multiplier: 1, severity: 1 }
+    ];
+    const RANDOM_EVENTS = {
+      terrorist: {
+        name: "Terrorist Attack",
+        rule: "Terrorist threat! Call Guard or Shoot within 10s!",
+        type: "terrorist",
+        multiplier: 5,
+        severity: 7,
+        duration: 10000 // 10s
+      },
+      bomb: {
+        name: "Bomb Threat",
+        rule: "Bomb threat! Defuse immediately!",
+        type: "bomb",
+        multiplier: 4,
+        severity: 6
+      }
+    };
+
+    const DAY_LENGTH_SECONDS = 160; // 2:40
+    const DAY_LENGTH_MS = DAY_LENGTH_SECONDS * 1000;
+    const EVENT_CHANCE = 0.05; // 5%
+    let eventNextCheck = DAY_LENGTH_MS;
+    let lastEventDay = 0;
+
+    let gameState = {
+      score: 0,
+      currency: 0,
+      day: 1,
+      severity: 1,
+      upgrades: {},
+      lockdownCooldown: 0,
+      eventActive: false,
+      eventType: null,
+      gameTime: 0,
+      dayStart: 0,
+      savedataVersion: 1.7,
+      paycheck: 0,
+      correctToday: 0,
+      requiredCorrect: 8
+    };
+    let currentEvent = null;
+    let entrantStartTime = null;
+    let inBombEvent = false;
+    let bombTimer = null;
+    let bombTimeout = null;
+    let bombCutWire = null;
+    let bombEndTime = 0;
+    let terroristEndTime = 0;
+    let terroristTimer = null;
+    let terroristTimeout = null;
+    let terroristActive = false;
+    let terroristPenalty = 0;
+    let lockdownCooldownEnd = 0;
+    let totalDaysPlayed = 0;
+    let lastStampTimeout = null;
+    let dayEndPending = false;
+    let showPaycheckTimeout = null;
+    let clockPaused = false;
+
+    // --- Shop Button logic ---
+    function showShopButtonIfAllowed() {
+      const shopBtn = document.getElementById('shop-btn');
+      if (gameState.day > 1) {
+        shopBtn.style.display = 'block';
+      } else {
+        shopBtn.style.display = 'none';
+      }
+    }
+    function showStore() {
+      const store = document.getElementById('store');
+      store.style.display = 'block';
+      showShopButtonIfAllowed();
+      setTimeout(() => store.style.display = 'none', 12000);
+    }
+    document.getElementById('shop-btn').addEventListener('click', function() {
+      document.getElementById('store').style.display = 'block';
+    });
+
+    // --- Feedback
+    function showFeedback(text, color) {
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = text;
+      feedback.style.color = color;
+      feedback.classList.add("active");
+      feedback.style.animation = 'none';
+      void feedback.offsetWidth;
+      feedback.style.animation = 'fadeOut 1.6s forwards';
+      setTimeout(() => {
+        feedback.classList.remove("active");
+        feedback.style.animation = '';
+        feedback.textContent = '';
+      }, 1700);
+    }
+
+    // --- Entrant and Document Generation ---
+    function randElement(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    function randomDateString(startYear, endYear) {
+      const year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
+      const month = Math.floor(Math.random() * 12) + 1;
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const day = Math.floor(Math.random() * daysInMonth) + 1;
+      return `${month}/${day}/${year}`;
+    }
+    function generateEntrant() {
+      const firstName = randElement(firstNames);
+      const lastName = randElement(lastNames);
+      const name = `${firstName} ${lastName}`;
+      const nationality = randElement(nationalities);
+      document.getElementById("name").innerHTML = `<strong>Name:</strong> ${name}`;
+      document.getElementById("nationality").innerHTML = `<strong>Nationality:</strong> ${nationality}`;
+      generatePassport(name, nationality);
+      generateVisa(name, nationality);
+      generateVaccine(name);
+      generateDigitalID(name);
+      removeStamps();
+    }
+    function generatePassport(name, nationality) {
+      const container = document.getElementById('passport-container');
+      const list = document.getElementById('passport-list');
+      container.className = 'document passport ' + 
+        (Math.random() > 0.7 ? 'low-quality' : '') + ' ' +
+        (Math.random() > 0.5 ? 'security-hologram' : '');
+      list.innerHTML = `
+        <li><strong>Name:</strong> ${name}</li>
+        <li><strong>Passport No.:</strong> P${Math.floor(100000 + Math.random() * 900000)}</li>
+        <li><strong>Nationality:</strong> ${nationality}</li>
+        <li><strong>DOB:</strong> ${randomDateString(1950, 2003)}</li>
+        <li><strong>Expires:</strong> ${randomDateString(2021, 2030)}</li>
+      `;
+    }
+    function generateVisa(name, nationality) {
+      const container = document.getElementById('visa-container');
+      const list = document.getElementById('visa-list');
+      if(Math.random() > 0.5) {
+        container.style.display = 'block';
+        list.innerHTML = `
+          <li><strong>Name:</strong> ${name}</li>
+          <li><strong>Visa No.:</strong> V${Math.floor(10000 + Math.random() * 90000)}</li>
+          <li><strong>Issue Country:</strong> ${nationality}</li>
+          <li><strong>Expires:</strong> ${randomDateString(2021, 2025)}</li>
+        `;
+      } else {
+        container.style.display = 'none';
+        list.innerHTML = '';
+      }
+    }
+    function generateVaccine(name) {
+      const container = document.getElementById('vaccine-container');
+      const list = document.getElementById('vaccine-list');
+      if(Math.random() > 0.5) {
+        container.style.display = 'block';
+        list.innerHTML = `
+          <li><strong>Name:</strong> ${name}</li>
+          <li><strong>Vaccine:</strong> COVID-19 (2 doses)</li>
+          <li><strong>Last Dose:</strong> ${randomDateString(2019, 2023)}</li>
+        `;
+      } else {
+        container.style.display = 'none';
+        list.innerHTML = '';
+      }
+    }
+    function generateDigitalID(name) {
+      const container = document.getElementById('digital-container');
+      const list = document.getElementById('digital-list');
+      if(Math.random() > 0.5) {
+        container.style.display = 'block';
+        list.innerHTML = `
+          <li><strong>Name:</strong> ${name}</li>
+          <li><strong>ID No.:</strong> D${Math.floor(100000 + Math.random() * 900000)}</li>
+          <li><strong>Expires:</strong> ${randomDateString(2021, 2030)}</li>
+        `;
+      } else {
+        container.style.display = 'none';
+        list.innerHTML = '';
+      }
+    }
+
+    function checkEntry(isApproved) {
+      let isValid = true;
+      const errors = [];
+      const passportExpiry = new Date(
+        document.getElementById("passport-list")
+          .querySelector("li:last-child").innerText.split(": ")[1]
+      );
+      if(passportExpiry < new Date()) {
+        isValid = false;
+        errors.push("Expired passport");
+      }
+      if(currentEvent.type === "visa") {
+        const visaDisplayed = document.getElementById("visa-container").style.display === 'block';
+        if(!visaDisplayed) {
+          isValid = false;
+          errors.push("Missing required visa");
+        } else {
+          const visaExpiry = new Date(
+            document.getElementById("visa-list")
+              .querySelector("li:last-child").innerText.split(": ")[1]
+          );
+          if(visaExpiry < new Date()) {
+            isValid = false;
+            errors.push("Expired visa");
+          }
+        }
+      }
+      if(currentEvent.type === "vaccine") {
+        const vaccineDisplayed = document.getElementById("vaccine-container").style.display === 'block';
+        if(!vaccineDisplayed) {
+          isValid = false;
+          errors.push("Missing vaccination");
+        }
+      }
+      if(currentEvent.type === "digital") {
+        const digitalDisplayed = document.getElementById("digital-container").style.display === 'block';
+        if(digitalDisplayed) {
+          isValid = false;
+          errors.push("Digital IDs not accepted today");
+        }
+      }
+      const timeTaken = (Date.now() - entrantStartTime) / 1000;
+      const multiplier = currentEvent.multiplier || 1;
+      let feedback = "";
+      let scoreDelta = 0;
+      const decisionCorrect = (isApproved && isValid) || (!isApproved && !isValid);
+      if(decisionCorrect) {
+        scoreDelta = Math.max(1, Math.floor(multiplier));
+        if(timeTaken < 5) scoreDelta += 1;
+        gameState.score += scoreDelta;
+        gameState.correctToday = (gameState.correctToday || 0) + 1;
+        feedback = `✓ Correct! Score +${scoreDelta} (x${multiplier})`;
+        showStamp("APPROVED");
+      } else {
+        scoreDelta = Math.max(-1, Math.floor(-0.5 * multiplier));
+        gameState.score += scoreDelta;
+        feedback = `✗ Wrong! ${errors.join(', ')} (Score ${scoreDelta})`;
+        showStamp("DENIED");
+      }
+      saveAndUpdate();
+      showFeedback(feedback, decisionCorrect ? "#27ae60" : "#c0392b");
+      if(!isApproved && !decisionCorrect) showGunEffect();
+      setTimeout(nextEntrant, 850);
+    }
+
+    function showStamp(text) {
+      removeStamps();
+      let container = document.querySelector("#entrant-info");
+      let stamp = document.createElement("span");
+      stamp.className = "stamp";
+      stamp.textContent = text;
+      container.appendChild(stamp);
+      lastStampTimeout = setTimeout(removeStamps, 1000);
+    }
+    function removeStamps() {
+      const stampEl = document.querySelector(".stamp");
+      if(stampEl) stampEl.remove();
+      if(lastStampTimeout) clearTimeout(lastStampTimeout);
+    }
+    function showGunEffect() {
+      const gun = document.getElementById('gun-sight');
+      const audio = document.getElementById('gun-audio');
+      gun.style.display = 'block';
+      gun.style.animation = 'none';
+      void gun.offsetWidth;
+      gun.style.animation = 'gun-shot 0.14s linear 1';
+      if(audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+      setTimeout(() => gun.style.display = 'none', 300);
+    }
+    function updateDisplays() {
+      document.getElementById("score").innerHTML = `Score: ${gameState.score} | Cash: $<span id="currency">${gameState.currency}</span>`;
+      document.getElementById('score-display').textContent = gameState.score;
+      document.getElementById('cash-display').textContent = gameState.currency;
+      document.getElementById('store-currency').textContent = gameState.currency;
+      document.getElementById('store-cash-label').innerHTML = `(Cash: $${gameState.currency})`;
+      document.getElementById('severity-label').innerHTML = `Severity: ${gameState.severity}/7`;
+      document.getElementById('day-indicator').textContent = `Day ${gameState.day}`;
+      showShopButtonIfAllowed();
+      const meter = document.getElementById('severity-progress');
+      const percent = Math.min((gameState.severity / 7) * 100, 100);
+      meter.style.width = `${percent}%`;
+    }
+    function nextEntrant() {
+      if (gameState.eventActive && gameState.eventType === 'terrorist') return;
+      if (gameState.eventActive && gameState.eventType === 'bomb') return;
+      currentEvent = randElement(events);
+      gameState.severity = currentEvent.severity || 1;
+      document.getElementById("rules").innerHTML = `<strong>Rules of the Day:</strong> ${currentEvent.rule}`;
+      generateEntrant();
+      entrantStartTime = Date.now();
+      saveAndUpdate();
+      updateDisplays();
+    }
+    function startGame() {
+      autoLoadGame();
+      gameState.score = gameState.score || 0;
+      gameState.currency = gameState.currency || 0;
+      gameState.day = gameState.day || 1;
+      gameState.severity = gameState.severity || 1;
+      gameState.upgrades = gameState.upgrades || {};
+      gameState.eventActive = false;
+      gameState.eventType = null;
+      gameState.lockdownCooldown = gameState.lockdownCooldown || 0;
+      gameState.gameTime = 0;
+      gameState.dayStart = Date.now();
+      gameState.paycheck = 0;
+      gameState.correctToday = gameState.correctToday || 0;
+      gameState.requiredCorrect = gameState.requiredCorrect || 8;
+      totalDaysPlayed = gameState.totalDaysPlayed || 0;
+      updateDisplays();
+      nextEntrant();
+      document.getElementById('store').style.display = 'none';
+      updateLockdownButton();
+      showShopButtonIfAllowed();
+    }
+
+    function handlePaycheck() {
+      clockPaused = true;
+      let baseMultiplier = 1;
+      let eventMultiplier = 1;
+      let eventName = "";
+      if (gameState.eventActive && gameState.eventType && RANDOM_EVENTS[gameState.eventType]) {
+        eventMultiplier = RANDOM_EVENTS[gameState.eventType].multiplier || 1;
+        baseMultiplier = Math.max(gameState.severity, 1);
+        eventName = RANDOM_EVENTS[gameState.eventType].name;
+      } else if (currentEvent && currentEvent.multiplier) {
+        eventMultiplier = currentEvent.multiplier;
+        baseMultiplier = Math.max(gameState.severity, 1);
+        eventName = currentEvent.name;
+      }
+      let paycheck = 0;
+      let lostHalf = false;
+      if ((gameState.correctToday || 0) < (gameState.requiredCorrect || 8)) {
+        let oldMoney = gameState.currency;
+        gameState.currency = Math.floor(gameState.currency / 2);
+        lostHalf = true;
+        showFeedback(`You didn't get ${gameState.requiredCorrect} correct! Lost half your money! ($${oldMoney} → $${gameState.currency})`, "#e67e22");
+        gameState.requiredCorrect += 2;
+      } else {
+        showFeedback(`You met the daily quota! (+1 required for tomorrow)`, "#27ae60");
+        gameState.requiredCorrect += 1;
+      }
+      if (gameState.score > 0) {
+        paycheck = Math.round(gameState.score * eventMultiplier * (baseMultiplier/2));
+        gameState.currency += paycheck;
+        setTimeout(() => showFeedback(`Paycheck: +$${paycheck} (score ${gameState.score}, x${eventMultiplier}, severity ${baseMultiplier}${eventName ? ", " + eventName : ""})`, "#27ae60"), lostHalf ? 1700 : 0);
+      } else if (gameState.score < 0) {
+        paycheck = Math.ceil(gameState.score / 2);
+        gameState.currency = Math.max(0, gameState.currency + paycheck);
+        setTimeout(() => showFeedback(`Paycheck: -$${-paycheck} (score ${gameState.score})`, "#c0392b"), lostHalf ? 1700 : 0);
+      } else {
+        setTimeout(() => showFeedback("Paycheck: $0", "#888"), lostHalf ? 1700 : 0);
+      }
+      gameState.paycheck = paycheck;
+      gameState.score = 0;
+      saveAndUpdate();
+      updateDisplays();
+      setTimeout(() => {
+        gameState.day++;
+        document.getElementById('day-indicator').textContent = `Day ${gameState.day}`;
+        gameState.dayStart = Date.now();
+        gameState.gameTime = 0;
+        gameState.correctToday = 0;
+        clockPaused = false;
+        updateDisplays();
+        showShopButtonIfAllowed();
+        nextEntrant();
+      }, lostHalf ? 3400 : 1700);
+    }
+
+    function updateGameTime() {
+      if(document.hidden || clockPaused) return;
+      const now = Date.now();
+      gameState.gameTime = now - gameState.dayStart;
+      // Day clock
+      const secondsInDay = Math.floor(gameState.gameTime / 1000);
+      const mins = Math.floor(secondsInDay / 60).toString().padStart(2, "0");
+      const secs = (secondsInDay % 60).toString().padStart(2, "0");
+      document.getElementById('clock').textContent = `${mins}:${secs}`;
+      // "Day"/"night" simulation: brighter in middle, dark at start/end, pitch black near end unless flashlight is owned
+      let progress = (gameState.gameTime % DAY_LENGTH_MS) / DAY_LENGTH_MS;
+      let dark = 0.7 * Math.pow(Math.cos(progress * Math.PI), 2);
+      if (progress < 0.07 || progress > 0.93) dark = 0.95; // near "midnight"
+      else if (progress > 0.2 && progress < 0.8) dark = 0.25; // bright
+      else if (progress > 0.13 && progress < 0.87) dark = 0.35; // sunrise/sunset
+      if (gameState.upgrades && gameState.upgrades.flashlight && (progress < 0.07 || progress > 0.93)) {
+        dark = 0.4;
+      }
+      document.body.style.backgroundColor = `rgba(35,42,56,${dark})`;
+      if (gameState.gameTime >= DAY_LENGTH_MS && !dayEndPending) {
+        dayEndPending = true;
+        handlePaycheck();
+        setTimeout(() => { dayEndPending = false; }, 3500);
+        return;
+      }
+      if (!gameState.eventActive && gameState.gameTime > 2000 && (gameState.gameTime % DAY_LENGTH_MS < 1100)) {
+        if(Math.random() < EVENT_CHANCE) {
+          startRandomEvent();
+        }
+      }
+      updateLockdownButton();
+    }
+
+    document.querySelectorAll('.upgrade').forEach(button => {
+      button.addEventListener('click', function() {
+        const cost = parseInt(this.dataset.cost);
+        if(gameState.currency >= cost) {
+          gameState.currency -= cost;
+          gameState.upgrades[this.dataset.upgrade] = true;
+          saveAndUpdate();
+          alert(`Purchased ${this.dataset.upgrade}!`);
+          if(this.dataset.upgrade === 'flashlight') {
+            document.body.style.filter = 'brightness(1.13)';
+          }
+        } else {
+          alert('Not enough cash!');
+        }
+      });
+    });
+    document.querySelectorAll('.upgrade-item').forEach(div => {
+      div.addEventListener('click', function() {
+        const cost = parseInt(this.dataset.cost);
+        if(gameState.currency >= cost) {
+          gameState.currency -= cost;
+          gameState.upgrades[this.dataset.upgrade] = true;
+          saveAndUpdate();
+          alert(`Purchased ${this.dataset.upgrade}!`);
+        } else {
+          alert('Not enough cash!');
+        }
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'g' || e.key === 'G') {
+        const guidebook = document.getElementById('guidebook');
+        guidebook.style.display = guidebook.style.display === 'none' ? 'block' : 'none';
+      }
+      if(e.key === 's' || e.key === 'S') {
+        if (gameState.day > 1) document.getElementById('store').style.display = 'block';
+      }
+      if(e.key === 'l' || e.key === 'L') {
+        if(document.getElementById('lockdown-btn').style.display === 'block') {
+          document.getElementById('lockdown-btn').click();
+        }
+      }
+      if(e.key === 'a' || e.key === 'A') {
+        document.getElementById('approve').click();
+      }
+      if(e.key === 'd' || e.key === 'D') {
+        document.getElementById('deny').click();
+      }
+      if(e.key === 'c' || e.key === 'C') {
+        if(document.getElementById('call-guard-btn').classList.contains("active")) {
+          document.getElementById('call-guard-btn').click();
+        }
+      }
+      if(e.key === 'Escape') {
+        document.getElementById('guidebook').style.display = 'none';
+        document.getElementById('store').style.display = 'none';
+        if(document.getElementById('bomb-overlay')) document.getElementById('bomb-overlay').remove();
+      }
+    });
+
+    function saveGame() {
+      autoSaveGame();
+      showFeedback("Game Saved!", "#27ae60");
+      updateDisplays();
+    }
+    function loadGame() {
+      autoLoadGame();
+    }
+    document.getElementById('save-btn')?.addEventListener('click', saveGame);
+    document.getElementById('load-btn')?.addEventListener('click', loadGame);
+
+    function updateLockdownButton() {
+      const btn = document.getElementById('lockdown-btn');
+      const now = Date.now();
+      if(gameState.eventActive && gameState.eventType === "terrorist" &&
+        terroristActive && (terroristEndTime - now < 9000) && now > lockdownCooldownEnd) {
+        btn.style.display = 'block';
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+    document.getElementById('lockdown-btn').addEventListener('click', function() {
+      if(Date.now() > lockdownCooldownEnd && terroristActive) {
+        lockdownCooldownEnd = Date.now() + 1440000; // 24 min
+        showFeedback("Lockdown activated!", "#e74c3c");
+        endTerroristEvent(true, true);
+        updateLockdownButton();
+        saveAndUpdate();
+      }
+    });
+
+    function startRandomEvent() {
+      if (gameState.eventActive) return;
+      if(Math.random() < 0.5) startTerroristEvent();
+      else startBombEvent();
+    }
+    function startTerroristEvent() {
+      gameState.eventActive = true;
+      gameState.eventType = "terrorist";
+      gameState.severity = RANDOM_EVENTS.terrorist.severity;
+      updateDisplays();
+      document.getElementById("rules").innerHTML = `<strong>Rules of the Day:</strong> ${RANDOM_EVENTS.terrorist.rule}`;
+      terroristActive = true;
+      terroristEndTime = Date.now() + RANDOM_EVENTS.terrorist.duration;
+      document.getElementById('call-guard-btn').classList.add("active");
+      showFeedback("🚨 Terrorist Attack! Call Guard or Shoot!", "#e74c3c");
+      terroristPenalty = Math.floor(500 + Math.random() * 501);
+      terroristTimer = setTimeout(() => {
+        endTerroristEvent(false, false);
+        saveAndUpdate();
+      }, RANDOM_EVENTS.terrorist.duration);
+    }
+    function endTerroristEvent(success, lockdown) {
+      terroristActive = false;
+      gameState.eventActive = false;
+      gameState.eventType = null;
+      document.getElementById('call-guard-btn').classList.remove("active");
+      clearTimeout(terroristTimer);
+      if(success) {
+        showFeedback(lockdown ? "Lockdown successful! No losses." : "Terrorist stopped! +$50", "#2ecc71");
+        gameState.currency += 50;
+      } else {
+        let penalty = terroristPenalty;
+        if(gameState.upgrades.kevlar) penalty = Math.round(penalty / 2);
+        let deaths = 3;
+        let deathPenalty = 0;
+        for(let i=0;i<deaths;i++) deathPenalty += Math.floor(500 + Math.random()*501);
+        showFeedback(`Terrorist escaped! -$${penalty+deathPenalty}`, "#c0392b");
+        gameState.currency = Math.max(0, gameState.currency - penalty - deathPenalty);
+      }
+      saveAndUpdate();
+      updateDisplays();
+      setTimeout(() => {
+        gameState.severity = 1;
+        nextEntrant();
+      }, 2000);
+    }
+    function startBombEvent() {
+      gameState.eventActive = true;
+      gameState.eventType = "bomb";
+      let duration = Math.floor(Math.random() * 25 + 35) * 1000;
+      gameState.severity = RANDOM_EVENTS.bomb.severity;
+      updateDisplays();
+      document.getElementById("rules").innerHTML = `<strong>Rules of the Day:</strong> ${RANDOM_EVENTS.bomb.rule}`;
+      inBombEvent = true;
+      bombEndTime = Date.now() + duration;
+      let wireColors = ['red','blue','green','yellow','orange','purple','pink','teal','lime'];
+      let numWires = 4 + Math.floor(Math.random()*3);
+      let wires = [];
+      while(wires.length<numWires) {
+        let c = randElement(wireColors);
+        if(!wires.includes(c)) wires.push(c);
+      }
+      bombCutWire = randElement(wires);
+      let bombHTML = `
+        <div id="bomb-overlay" class="event-alert">
+          <div class="timer" style="font-size:1.1em;margin:8px 0;user-select:none;">
+            <span id="bomb-timer">${Math.floor(duration/1000)}</span>s left
+          </div>
+          <div style="font-size:1.4em;font-weight:bold;">Bomb Defusal!</div>
+          ${wires.sort(() => Math.random() - 0.5).map(color => `
+            <button class="wire" style="background:${color}" data-wire="${color}">
+              Cut ${color} wire
+            </button>
+          `).join('')}
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', bombHTML);
+      makeBombOverlayDraggable();
+      bombTimer = setInterval(() => {
+        let tLeft = Math.max(0, Math.floor((bombEndTime-Date.now())/1000));
+        const timerEl = document.getElementById('bomb-timer');
+        if(timerEl) timerEl.textContent = tLeft;
+        if(tLeft <= 0) endBombEvent(false);
+      }, 1000);
+      bombTimeout = setTimeout(() => endBombEvent(false), duration);
+      document.querySelectorAll('#bomb-overlay .wire').forEach(btn => {
+        btn.addEventListener('click', function() {
+          defuseBomb(this.dataset.wire);
+        });
+      });
+    }
+    function defuseBomb(color) {
+      if(!inBombEvent) return;
+      if(color === bombCutWire) {
+        endBombEvent(true);
+      } else {
+        endBombEvent(false);
+      }
+    }
+    function endBombEvent(success) {
+      clearInterval(bombTimer);
+      clearTimeout(bombTimeout);
+      inBombEvent = false;
+      gameState.eventActive = false;
+      gameState.eventType = null;
+      const overlay = document.getElementById('bomb-overlay');
+      if(overlay) overlay.remove();
+      if(success) {
+        showFeedback("Bomb Defused! +$100", "#27ae60");
+        gameState.currency += 100;
+      } else {
+        showFeedback("Bomb Exploded! -$150", "#c0392b");
+        gameState.currency = Math.max(0, gameState.currency - 150);
+      }
+      saveAndUpdate();
+      updateDisplays();
+      setTimeout(() => {
+        gameState.severity = 1;
+        nextEntrant();
+      }, 1200);
+    }
+
+    document.getElementById('call-guard-btn').addEventListener('click', function() {
+      if(terroristActive) {
+        endTerroristEvent(true, false);
+        saveAndUpdate();
+      }
+    });
+
+    document.getElementById("approve").addEventListener("click", () => checkEntry(true));
+    document.getElementById("deny").addEventListener("click", () => checkEntry(false));
+
+    function gameLoop() {
+      if (!document.hidden) {
+        updateGameTime();
+        updateDisplays();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+    window.onload = () => {
+      startGame();
+      gameLoop();
+    };
+    document.getElementById('guidebook').style.display = 'none';
+  </script>
+</body>
+</html>
